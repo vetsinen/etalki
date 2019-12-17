@@ -1,0 +1,133 @@
+{% extends '_base.html' %}
+
+{% block title %}booking dashboard{% endblock title %}
+
+{% block content %}
+
+    {% if user.city %}
+        {% if total %}
+            <p>there are such bookings</p>
+            {% for lesson in lessons %}
+                <ul>
+                    <li>{{ lesson.datetime }} by {{ usercity }} time with {{ lesson.teacher }}
+                        {% if lesson.id %}
+                            <form method="POST" action="/unbook/" class="unbookform">{% csrf_token %}
+                                <input type="hidden" name="id" value="{{ lesson.id }}">
+                                <button type="submit" class="unbook btn btn-danger btn-sm">unbook</button>
+                            </form>
+                        {% else %}
+                            <button type="submit" class="unbook btn-sm" disabled>unbook</button>
+                            <a href="/static/pdf/Public_Offer_Agreement%20_super_ukr.pdf">?</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            {% endfor %}
+        {% else %}
+            <h3>no upcoming lessons</h3>
+        {% endif %}
+
+        {% if user.hours %}
+            <p>today is <strong>{{ today|safe }}</strong>, according to school rules
+                you can book lessons from <strong>{{ bookingStart|safe }}</strong></p>
+            <div id="app">
+                <form method="POST" class="post-form">{% csrf_token %}
+                    <p>
+                        <label for="date">Start:</label>
+                        <input type="date" id="date" value="{{ bookingStart|safe }}" name="date">
+                    </p>
+                    <p><label for="id_hour">time in {{ usercity }}:</label>
+                        <select name="hour" id="hour">
+                            <option>14:00 by Kiev time</option>
+                        </select>
+                    </p>
+                    <button type="submit" class="save btn btn-primary">book it</button>
+                </form>
+
+            </div>
+        {% endif %}
+        <hr>
+        <div class="payment">
+            <a href="/pay1" class="btn btn-success btn-lg">pay for 1 hour-{{ price1 }}₴</a><br/>
+            <a href="/pay5" class="btn btn-success btn-lg">pay for 5 hours-{{ price5 }}₴</a><br/>
+            <a href="/pay10" class="btn btn-success btn-lg">pay for 10 hours-{{ price10 }}₴</a><br/>
+        </div>
+
+
+    {% else %}
+        <div id="choosetimeoffset">
+            <form method="post" action="timeoffset/">{% csrf_token %}
+                <label for="timeoffset">please, specify your timezone:</label>
+                {#                <input type="text" id="timeoffset" name="timeoffset">#}
+                <select name="timeoffset" id="timeoffset">
+                    <option disabled>your timezone</option>
+                    <option value="-12">UTC-12</option>
+                    <option value="-11">UTC-11</option>
+                    <option value="-10">UTC-10-Alaska, Hawaii</option>
+                    <option value="-9">UTC-9-Alaska</option>
+                    <option value="-8">UTC-8-Washington, California, Mexico</option>
+                    <option value="-7">UTC-7-Utah, Texas</option>
+                    <option value="-6">UTC-6-Chile, Equador, Alabame</option>
+                    <option value="-5">UTC-5-Brazil, Cuba, Indiana</option>
+                    <option value="-4">UTC-4-Labrador, Puerto Rico</option>
+                    <option value="-3">UTC-3-Argentina,Uruguay</option>
+                    <option value="-2">UTC-2-Fernando de Noronha</option>
+                    <option value="-1">UTC-1</option>
+                    <option value="0">UTC-0-Ireland, UK</option>
+                    <option value="1">UTC+1-Italy, Croatia</option>
+                    <option value="2">UTC+2-Finland, Greece, Ukraine</option>
+                    <option value="3">UTC+3-Belarus</option>
+                    <option value="4">UTC+4-Armenia, UAE, Georgia</option>
+                    <option value="5">UTC+5-Kazakhstan</option>
+                    <option value="5.5">UTC+5.30-India, Sri Lanka</option>
+                    <option value="6">UTC+6-Bhutan, Kazakhstan</option>
+                    <option value="7">UTC+7-Thailand ,Vietnam</option>
+                    <option value="8">UTC+8-Australia, China</option>
+                    <option value="9">UTC+9-Japan, South Korea</option>
+                    <option value="10">UTC+10-Australia</option>
+                    <option value="11">UTC+11</option>
+                    <option value="12">UTC+12-New Zealand</option>
+                    <option value="13">UTC+13-New Zealand</option>
+                    <option value="14">UTC+14</option>
+                </select>
+                <input type="text" name="city" value="{{ city|safe }}">
+                <input type="submit">
+            </form>
+        </div>
+
+    {% endif %}
+
+
+
+    <script>
+        var slots ={{ slots|safe }};
+        var jstimeoffset = -(new Date()).getTimezoneOffset() / 60; //TODO update offset in input
+        var date = '{{ today|safe }}';
+        var kytimezone = 2;
+        {% if usertimezone %} var usertimezone = {{ usertimezone|safe }} ;{% endif %}
+
+
+            function updateSlots() {
+                var $hour = $("#hour");
+                $hour.empty();
+                $hour.append($('<option disabled value="">choose one option</option>'));
+                var date = $('#date').val();
+
+                if (slots[date])
+                    for (hour of slots[date]) {
+                        var minutes = (Math.trunc(hour) === hour) ? ':00' : ':30';
+                        $hour.append($(`<option value="${hour}">${(Math.trunc(hour) - kytimezone + usertimezone) + minutes}</option>`));
+                    }
+            };
+
+        window.onload = function () {
+            updateSlots();
+            $("#date").change(updateSlots);
+
+            if ($('div#choosetimeoffset').length) {
+                $('select option[value='+jstimeoffset+']').attr("selected",true);
+            }
+        }
+
+    </script>
+
+{% endblock content %}

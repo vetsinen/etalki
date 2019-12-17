@@ -1,0 +1,13 @@
+.content {
+}
+
+.unbookform {
+    white-space: nowrap;
+    display: inline;
+    margin: 0px;
+    padding: 0px;
+}
+
+div.payment a{
+    margin: 3px;
+}

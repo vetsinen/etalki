@@ -1,0 +1,19 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <div id="slots">
+        <div>available slots for
+            <form>
+                <input type="date" value="{{ today|safe }}" min="2019-01-00"
+                       max="2019-12-30">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var slots = {{ slots|safe }};
+        window.onload = function () {
+
+        }
+    </script>
+{% endblock %}

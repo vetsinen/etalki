@@ -1,0 +1,10 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <h3>generate lesson slots from config</h3>
+    <form method="POST" class="post-form">{% csrf_token %}
+        <input type="date" name="start" value="{{ today }}"  min="{{ today }}">
+        <input type="date" name="finish" value="{{ today }}" min="{{ today }}">
+        <button type="submit" class="save btn btn-default">Make slots</button>
+    </form>
+{% endblock %}

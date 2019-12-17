@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title></title>
+    <script src="https://api.fondy.eu/static_common/v1/checkout/ipsp.js"></script>
+</head>
+<body>
+<div id="checkout"></div>
+<script>
+    var button = $ipsp.get("button");
+    button.setHost("api.fondy.eu");
+    button.setProtocol("https");
+    button.setMerchantId(1419672);
+    button.setAmount("{{ price|safe }}", "UAH", true);
+    button.setResponseUrl("https://booking.superschool.com.ua/callback/");
+    button.addParam("lang", "en");
+    button.addParam("merchant_data", "rootuser");
+    button.addParam("server_callback_url", "https://booking.superschool.com.ua/callback/");
+    button.addParam("sender_email","{{ email|safe }}");
+    var url = button.getUrl();
+    $ipsp("checkout").config({
+        "wrapper": "#checkout",
+        "styles": {
+            "body": {
+                "overflow": "hidden"
+            },
+            "#email":{
+                "display":"none"
+            }
+        }
+    }).scope(function () {
+        this.width("100%");
+        this.height(480);
+        this.action("resize", function (data) {
+            this.setCheckoutHeight(data.height);
+        });
+        this.loadUrl(url);
+    });
+</script>
+</body>
+</html>

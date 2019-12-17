@@ -1,0 +1,40 @@
+{% extends '_base.html' %}
+
+{% block title %}admin dashboard, alllessons{% endblock title %}
+
+{% block content %}
+    <form method="GET" id="form">
+        <p>
+            <label for="date">choose date:</label>
+            <input type="date" id="date" value="{{ date|safe }}" name="date">
+        </p>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>time</th>
+                <th>email</th>
+                <th>teacher</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for lesson in lessons %}
+                <tr>
+                    <td>{{ lesson.datetime }}</td>
+                    <td>{{ lesson.student }}</td>
+                    <td><span style="background-color: #{{ lesson.color }};">{{ lesson.teacher }}</span></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+    <script>
+        window.onload = function () {
+            $('#date').change(function () {
+                $('#form').submit();
+            })
+        };
+    </script>
+{% endblock %}
+
+<span>{{ lesson.datetime }} for
+            by </span><br>
